@@ -1,23 +1,23 @@
-# 一、介绍
+# 介绍
 该项目是为了方便在我的课程[《TrueNAS SCALE 终极教程》](https://www.bilibili.com/cheese/play/ss6060)中进行各种磁盘布局的性能测试开发的，模拟了CrystalDiskMark几个测试项目。在 fio 参数上有任何疑问或者需求可以给我提 issue ，欢迎 pr。
 
-# 二、项目依赖
+# 项目依赖
 
 目前仅支持类 Unix 环境，依赖软件[fio](https://github.com/axboe/fio)和[jq](https://github.com/jqlang/jq)
 
-## 2.1 Debian/Ubuntu 依赖安装
+## Debian/Ubuntu 依赖安装
 
 ```bash
 sudo apt install fio jq -y
 ```
 
-# 2.2 CentOS 系列依赖安装
+## CentOS 系列依赖安装
 
 ```bash
 sudo yum install fio jq -y
 ```
 
-# 三、使用
+# 使用
 
 直接下载`fio_mark.sh`文件，或者克隆到本地
 
