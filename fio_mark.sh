@@ -12,9 +12,8 @@ TYPE=default
 
 read_arg() {
     case "$1" in
-    test)
-        LOOP=1
-        SIZE=10m
+    fast)
+        RUNTIME=10s
         ;;
     all)
         TYPE=all
@@ -40,7 +39,7 @@ if [ -z "$TEST_DIR" ]; then
 fi
 
 # 测试命令
-fio_general="sudo fio --directory=$TEST_DIR --size=$SIZE --loops=$LOOP --ramp_time=2s --ioengine=libaio --direct=1 --stonewall --verify=0 --group_reporting=1 --output-format=json --output \"$TEST_DIR/fio_result\" \
+fio_general="sudo fio --directory=$TEST_DIR --size=$SIZE --runtime=$RUNTIME --time_based --ramp_time=5s --ioengine=libaio --direct=1 --stonewall --verify=0 --group_reporting=1 --output-format=json --output \"$TEST_DIR/fio_result\" \
 --name=read,RND4K-Q1T1 --rw=randread --iodepth=1 --bs=4k --numjobs=1 \
 --name=write,RND4K-Q1T1 --rw=randwrite --iodepth=1 --bs=4k --numjobs=1 \
 --name=read,SEQ1M-Q8T1 --rw=read --iodepth=8 --bs=1M --numjobs=1 \
@@ -52,7 +51,7 @@ fio_default="--name=read,SEQ1M-Q1T1 --rw=read --iodepth=1 --bs=1M --numjobs=1 \
 fio_nvme="--name=read,SEQ128K-Q32T1 --rw=read --iodepth=32 --bs=128k --numjobs=1 \
           --name=write,SEQ128K-Q32T1 --rw=write --iodepth=32 --bs=128k --numjobs=1 \
           --name=read,RND4K-Q32T16 --rw=randread --iodepth=32 --bs=4k --numjobs=16 \
-          --name=write,RND4K-Q32T16 --rw=randwrite --iodepth=32 --bs=4k --numjobs=16"
+          --name=write,RND4K-Q32T16 --rw=randwrite --iodepth=32 --bs=4k --numjobs=16 "
 
 # JQ 查询
 jq_general='def read_bw(name): [.jobs[] | select(.jobname==name).read.bw] | add / 1024 |floor|tostring;

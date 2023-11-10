@@ -28,12 +28,10 @@ git clone https://github.com/bihell/fio
 
 开始测试，注意把`/mnt/test`替换为你要测试的路径。
 
-> 程序每个测试项单任务文件大小为1G，循环跑5次。
->
-> 注意：参数设定上要比CrystalDiskMark严格些，如果你跑 ssd 可能会占用很多时间，一般默认测试即可。
+> 程序每个测试项单任务文件大小为1G，时长60秒。全部跑完预计一刻钟，如果觉得慢可以使用快速模式，每个任务时长10秒。
 
 ```Bash
-# 默认测试：只要输入测试路径即可，对应CrystalDiskMark的默认测试（耗时短）
+# 默认测试：只要输入测试路径即可，对应CrystalDiskMark的默认测试
 TrueNas-➜  ~ sudo bash fio_mark.sh /mnt/Stripe1
 [sudo] password for admin:
 Executing Default test:
@@ -43,15 +41,12 @@ Executing Default test:
      SEQ1M-Q1T1            2283            2282             864             863
      RND4K-Q1T1             129           33113              79           20331
      
-# SSD 测试：只要多输入个参数`ssd`，对应CrystalDiskMark的 NVME 测试（耗时长）
+# SSD 测试：只要多输入个参数`ssd`，对应CrystalDiskMark的NVME测试
 TrueNas-➜  ~ sudo bash fio_mark.sh /mnt/test ssd
 
-# 一起测：输入`all`参数则CrystalDiskMark的 NVME 和 SDD 测试一起测（耗时很长）
+# 一起测：输入`all`参数则CrystalDiskMark的NVME和SDD一起测
 TrueNas-➜  ~ sudo bash fio_mark.sh /mnt/test all
 
-# 如果只是想看看能不能跑通，请增加`test`参数
-TrueNas-➜  ~ sudo bash fio_mark.sh /mnt/test test
+# 如果想快速测试，请增加`fast`参数
+TrueNas-➜  ~ sudo bash fio_mark.sh /mnt/test fast
 ```
-
-
-
