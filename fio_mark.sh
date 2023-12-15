@@ -58,7 +58,9 @@ jq_general='def read_bw(name): [.jobs[] | select(.jobname==name).read.bw] | add 
             def write_bw(name): [.jobs[] | select(.jobname==name).write.bw] | add / 1024 | floor|tostring;
             def read_iops(name): [.jobs[] | select(.jobname==name).read.iops] | add | floor|tostring;
             def write_iops(name): [.jobs[] | select(.jobname==name).write.iops] | add | floor|tostring;
-            def job_summary(name): name+","+"read,bw"+","+read_bw(name),name+","+"write,bw"+","+write_bw(name),name+","+"read,io"+","+read_iops(name),name+","+"write,io"+","+write_iops(name);
+            def read_lat_ns(name): [.jobs[] | select(.jobname==name).read.lat_ns.mean] | add| floor|tostring;
+            def write_lat_ns(name): [.jobs[] | select(.jobname==name).write.lat_ns.mean] | add| floor|tostring;
+            def job_summary(name): name+","+"read,bw"+","+read_bw(name),name+","+"write,bw"+","+write_bw(name),name+","+"read,io"+","+read_iops(name),name+","+"write,io"+","+write_iops(name),name+","+"read,lat_ns"+","+read_lat_ns(name),name+","+"write,lat_ns"+","+write_lat_ns(name);
             job_summary("read,RND4K-Q1T1"),job_summary("write,RND4K-Q1T1"),
             job_summary("read,SEQ1M-Q8T1"),job_summary("write,SEQ1M-Q8T1")'
 jq_default=',job_summary("read,SEQ1M-Q1T1"),job_summary("write,SEQ1M-Q1T1"),
@@ -84,24 +86,28 @@ elif [[ "$TYPE" == "all" ]]; then
     eval "$command"
 fi
 
+jq -r "$query" "$TEST_DIR/fio_result"
 # 解析输出
-jq -r "$query" "$TEST_DIR/fio_result" | awk -F',' '{
+jq -r "$query" "$TEST_DIR/fio_result" |
+awk -F',' '{
     key = $2;
     if ($1 == "read" && $3 == "read") {
         if ($4 == "bw") read_bw[key] = $5;
         if ($4 == "io") read_io[key] = $5;
+        if ($4 == "lat_ns") read_lat_ns[key] = $5;
     }
     if ($1 == "write" && $3 == "write") {
         if ($4 == "bw") write_bw[key] = $5;
         if ($4 == "io") write_io[key] = $5;
+        if ($4 == "lat_ns") write_lat_ns[key] = $5;
     }
 }
 END {
-    printf("%15s %15s %15s %15s %15s\n", "", "Read [MB/s]", "Read [IOPS]", "Write [MB/s]", "Write [IOPS]");
+    printf("%15s %15s %15s %15s %15s %15s %15s\n", "", "Read [MB/s]", "Read [IOPS]","Read [LAT_ns]", "Write [MB/s]", "Write [IOPS]","Write [LAT_ns]");
     for (key in read_bw) {
-        printf("%15s %15s %15s %15s %15s\n", key, read_bw[key], read_io[key], write_bw[key], write_io[key]);
+        printf("%15s %15s %15s %15s %15s %15s %15s\n", key, read_bw[key], read_io[key], read_lat_ns[key],write_bw[key], write_io[key],write_lat_ns[key]);
     }
-}'
+}' 
 
 # 清理文件
 sudo rm $TEST_DIR/read,* $TEST_DIR/write,* $TEST_DIR/fio_result
