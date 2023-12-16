@@ -86,7 +86,7 @@ elif [[ "$TYPE" == "all" ]]; then
     eval "$command"
 fi
 
-jq -r "$query" "$TEST_DIR/fio_result"
+# jq -r "$query" "$TEST_DIR/fio_result"
 # 解析输出
 jq -r "$query" "$TEST_DIR/fio_result" |
 awk -F',' '{
